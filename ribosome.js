@@ -133,9 +133,6 @@ var amino_acids = [];
 var amino_acid_texts = [];
 var amino_acid_links = [];
 
-// ribosome starting position
-var ribosome_pos = 0;
-
 // we need this because only the first AUG can be the initialization codon, so if the
 // ribosome encounters a second AUG we want to treat it like it is not the init codon
 var init_codon_pos = INIT_CODON_POS_MAX;
@@ -145,21 +142,21 @@ var before_start_codon = false;
 var at_start_codon = false;
 var after_start_codon = false;
 
-var su_small_width = box_size_x*12+box_padding_x*1.5
-var su_small_height = box_size_y*6
-
 var su_large_width = box_size_x*12+box_padding_x*1.5
-var su_large_height = box_size_y+box_padding_y
+var su_large_height = box_size_y*6
+
+var su_small_width = box_size_x*12+box_padding_x*1.5
+var su_small_height = box_size_y+box_padding_y
 
 var ribosome_width = box_size_x*3+box_padding_x*3
 
 // ribosome small and large subunits
-var rect1 = new acgraph.math.Rect(x-box_padding_x/2, y-(box_size_y*6+box_padding_y), su_small_width, su_small_height);
-var rect2 = new acgraph.math.Rect(x-box_padding_x/2, y-box_padding_y/2, su_large_width, su_large_height);
-var su_small = acgraph.vector.primitives.roundedRect(stage, rect1, 6);
-var su_large = acgraph.vector.primitives.roundedRect(stage, rect2, 6);
-su_small.fill("#FFE2DE");
+var rect1 = new acgraph.math.Rect(x-box_padding_x/2, y-(box_size_y*6+box_padding_y), su_large_width, su_large_height);
+var rect2 = new acgraph.math.Rect(x-box_padding_x/2, y-box_padding_y/2, su_small_width, su_small_height);
+var su_large = acgraph.vector.primitives.roundedRect(stage, rect1, 6);
+var su_small = acgraph.vector.primitives.roundedRect(stage, rect2, 6);
 su_large.fill("#FFE2DE");
+su_small.fill("#FFE2DE");
 
 var before_init = acgraph.image('before_init.png', x,y+box_size_y*3,box_size_x*11,box_size_y*5);
 var at_init = acgraph.image('at_init.png', x,y+box_size_y*3,box_size_x*11,box_size_y*5);
@@ -195,89 +192,80 @@ class Ribosome {
   constructor()
   {
     this.state = RibosomeState.BEFORE_START_CODON;
+    this.states = [];
     this.pos = 0;
     this.ribosome_width = box_size_x*3+box_padding_x*3;
   }
 
-  // this.su_small_width = box_size_x*12+box_padding_x*1.5;
-  // this.su_small_height = box_size_y*6;
-  
   // this.su_large_width = box_size_x*12+box_padding_x*1.5;
-  // this.su_large_height = box_size_y+box_padding_y;
+  // this.su_large_height = box_size_y*6;
   
-  // this.su_small_x_init_pos = x-box_padding_x/2;
-  // this.su_small_y_init_pos = y-(box_size_y*6+box_padding_y);
-  // this.su_large_x_init_pos = y-box_padding_y/2;
-  // this.su_large_y_init_pos = x-box_padding_x/2;
+  // this.su_small_width = box_size_x*12+box_padding_x*1.5;
+  // this.su_small_height = box_size_y+box_padding_y;
   
-  // this.su_small_x_pos: this.su_small_x_init_pos;
-  // this.su_small_y_pos: this.su_small_y_init_pos;
+  // this.su_large_x_init_pos = x-box_padding_x/2;
+  // this.su_large_y_init_pos = y-(box_size_y*6+box_padding_y);
+  // this.su_small_x_init_pos = y-box_padding_y/2;
+  // this.su_small_y_init_pos = x-box_padding_x/2;
+  
   // this.su_large_x_pos: this.su_large_x_init_pos;
-  //  this.su_large_y_pos: this.su_large_y_init_pos;
+  // this.su_large_y_pos: this.su_large_y_init_pos;
+  // this.su_small_x_pos: this.su_small_x_init_pos;
+  //  this.su_small_y_pos: this.su_small_y_init_pos;
 
-  // this.rect1 = new acgraph.math.Rect(su_small_x_pos, su_small_y_pos, su_small_width, su_small_height);
-  // this.rect2 = new acgraph.math.Rect(su_large_x_pos, su_large_y_pos, su_large_width, su_large_height);
+  // this.rect1 = new acgraph.math.Rect(su_large_x_pos, su_large_y_pos, su_large_width, su_large_height);
+  // this.rect2 = new acgraph.math.Rect(su_small_x_pos, su_small_y_pos, su_small_width, su_small_height);
 
-  // this.su_small = acgraph.vector.primitives.roundedRect(stage, rect1, 6);
-  // this.su_large = acgraph.vector.primitives.roundedRect(stage, rect2, 6);
+  // this.su_large = acgraph.vector.primitives.roundedRect(stage, rect1, 6);
+  // this.su_small = acgraph.vector.primitives.roundedRect(stage, rect2, 6);
 
   // init() {
-  //   this.su_small.fill("#FFE2DE");
   //   this.su_large.fill("#FFE2DE");
+  //   this.su_small.fill("#FFE2DE");
   // }
 
   setState()
   {
-    
-      if (ribosome_pos < init_codon_pos)
+    var input = codons[this.pos];
+
+    if (this.state == RibosomeState.BEFORE_START_CODON)
+    {
+      if (input == "AUG")
       {
-        this.state = RibosomeState.BEFORE_START_CODON;
-        console.log("Ribosome.State: ", this.state);
-        setImages(this.state);
-        return;
-      }
-  
-      
-      if ((this.pos == init_codon_pos) || (init_codon_pos == INIT_CODON_POS_MAX && codons[this.pos] == "AUG"))
-      {
-        init_codon_pos = this.pos;
         this.state = RibosomeState.AT_START_CODON;
-        console.log("Ribosome.State: ", this.state);
-        setImages(this.state);
-        return;
       }
-    
-      if (this.pos > 1 && this.pos-1 == init_codon_pos)
+    }
+    else if (this.state == RibosomeState.AT_START_CODON)
+    {
+      if (input == "UAA" || input == "UAG" || input == "UGA")
+      {
+        this.state = RibosomeState.AT_STOP_CODON;
+      }
+      else
       {
         this.state = RibosomeState.AFTER_START_CODON;
-        console.log("Ribosome.State: ", this.state);
-        setImages(this.state);
-        return;
       }
-
-    if (codons[this.pos] == "UAG" || codons[this.pos] == "UAA" || codons[this.pos] == "UGA")
+    }
+    else if (this.state == RibosomeState.AFTER_START_CODON)
     {
-      this.state = RibosomeState.AT_STOP_CODON;
-
-      before_init.parent(null);
-      at_init.parent(stage);
-      read_frame.parent(null);
-
-      console.log("Ribosome.State: ", this.state);
-      setImages(this.state);
-      return;
+      if (input == "UAA" || input == "UAG" || input == "UGA")
+      {
+        this.state = RibosomeState.AT_STOP_CODON;
+      }
+    }
+    else if (this.state == RibosomeState.AT_STOP_CODON)
+    {
+      this.state = RibosomeState.AFTER_STOP_CODON
+    }
+    else if (this.state == RibosomeState.AFTER_STOP_CODON)
+    {
+      this.state = RibosomeState.AFTER_STOP_CODON
     }
 
-    if (this.state == RibosomeState.AT_STOP_CODON)
-    {
-      this.state = RibosomeState.AFTER_STOP_CODON;
-      console.log("Ribosome.State: ", this.state);
-      setImages(this.state);
-      return;
-    }
-
+    this.states.push(this.state);
     setImages(this.state);
-    console.log("Ribosome.State: ", this.state);
+
+    console.log("states:" , this.state);
   }
 
   moveForward()
@@ -299,8 +287,17 @@ class Ribosome {
       this.pos -= 1;
       
       // set the state of the ribosome relative to the start and stop codons
-      this.setState();
+      this.states.pop();
+      this.state = this.states[this.states.length-1];
+      console.log("reversed state: ", this.state)
+      // this.setState();
     }
+  }
+
+  reset()
+  {
+    this.pos = 0;
+    this.state = RibosomeState.BEFORE_START_CODON;
   }
 }
 
@@ -315,72 +312,66 @@ function enterButtonClick() {
 }
 
 function backwardButtonClick() {
-  if (ribosome_pos > 0)
+  console.log("myRibosome.pos: ", myRibosome.pos);
+  if (myRibosome.pos > 0)
   {
-    if (!before_start_codon)
+    if (myRibosome.state == RibosomeState.BEFORE_START_CODON ||
+        myRibosome.state == RibosomeState.AT_START_CODON)
     {
-      // undo past changes
-      if (ligases.length > 0)
-        ligases[ligases.length-1].remove()
-      if (amino_acids.length > 0)
-        amino_acids[amino_acids.length-1].remove()
-      if (amino_acid_texts.length > 0)
-        amino_acid_texts[amino_acid_texts.length-1].remove()
-      
-      ligases.pop();
-      amino_acids.pop();
-      amino_acid_texts.pop();
+      popLastAminoAcid();
+      su_large.setPosition(su_large.getX()-ribosome_width, su_large.getY());
+      su_small.setPosition(su_small.getX()-ribosome_width, su_small.getY());
+      myRibosome.moveBackward();
     }
-    
-    if (after_start_codon)
+    else if (myRibosome.state == RibosomeState.AFTER_START_CODON ||
+             myRibosome.state == RibosomeState.AT_STOP_CODON)
     {
-      amino_acid_links[amino_acid_links.length-1].remove();
-      amino_acid_links.pop();
+      popLastAminoAcid();
+      su_large.setPosition(su_large.getX()-ribosome_width, su_large.getY());
+      su_small.setPosition(su_small.getX()-ribosome_width, su_small.getY());
+      myRibosome.moveBackward();
+      replaceLigase();
     }
-    
-    myRibosome.moveBackward();
-    ribosome_pos -= 1;
-    
-    // set the state of the ribosome relative to the start and stop codons
-    myRibosome.setState();
-    
-    su_small.setPosition(su_small.getX()-ribosome_width, su_small.getY());
-    su_large.setPosition(su_large.getX()-ribosome_width, su_large.getY());
-    
-    if (after_start_codon)
+    else if (myRibosome.state == RibosomeState.AFTER_STOP_CODON)
     {
-      var ligase = acgraph.rect(mRNAs[(ribosome_pos-1)*3+1].getX(), mRNAs[(ribosome_pos-1)*3+1].getY()-box_size_y*3, box_size_x, box_size_y*3-box_padding_y*2.5);
-      ligase.parent(stage);
-      ligase.fill("#DDDDDD");
-      ligases.unshift(ligase);
+      su_large.setPosition(su_large.getX(), su_large.getY()+su_large_height);
+      su_small.setPosition(su_small.getX(), su_small.getY()-(su_small_height+box_padding_y));
+      myRibosome.moveBackward();
     }
   }
 }
 
 function forwardButtonClick() {
-  if (ribosome_pos < codons.length-1)
+  if (myRibosome.pos < codons.length-1)
   {
     myRibosome.moveForward();
-    ribosome_pos += 1;
     
     // set the state of the ribosome relative to the start and stop codons
-    myRibosome.setState();
     
-    su_small.setPosition(su_small.getX()+ribosome_width, su_small.getY());
-    su_large.setPosition(su_large.getX()+ribosome_width, su_large.getY());
+    if (myRibosome.state == RibosomeState.AFTER_STOP_CODON)
+    {
+      su_large.setPosition(su_large.getX(), su_large.getY()-su_large_height);
+      su_small.setPosition(su_small.getX(), su_small.getY()+su_small_height+box_padding_y);
+      return;
+    }
+    else
+    {
+      su_large.setPosition(su_large.getX()+ribosome_width, su_large.getY());
+      su_small.setPosition(su_small.getX()+ribosome_width, su_small.getY());
+    }
 
-    if (su_large.getX()+su_large_width > window.innerWidth*0.9)
+    if (su_small.getX()+su_small_width > window.innerWidth*0.9)
     {
       // stage.resize(window.innerWidth*0.9, window.innerHeight*0.9);
       console.log(document.body.clientWidth);
       d = document.getElementById("scrollDiv");
-      d.scrollTo((su_large.getX()+su_large_width+11)-d.clientWidth,0);
-      // window.scrollTo(30,0); // su_large.getX()+ribosome_width)-window.innerWidth,0);
+      d.scrollTo((su_small.getX()+su_small_width+11)-d.clientWidth,0);
+      // window.scrollTo(30,0); // su_small.getX()+ribosome_width)-window.innerWidth,0);
     }
     
-    if (ribosome_pos > 0 && (ligases.length > 0 || !before_start_codon))
+    if (myRibosome.pos > 0 && (ligases.length > 0 || !before_start_codon))
     {
-      var ligase = acgraph.rect(mRNAs[ribosome_pos*3+1].getX(), mRNAs[ribosome_pos*3+1].getY()-box_size_y*3, box_size_x, box_size_y*3-box_padding_y*2.5);
+      var ligase = acgraph.rect(mRNAs[myRibosome.pos*3+1].getX(), mRNAs[myRibosome.pos*3+1].getY()-box_size_y*3, box_size_x, box_size_y*3-box_padding_y*2.5);
       ligase.parent(stage);
       ligase.fill("#DDDDDD");
       ligases.push(ligase);
@@ -392,16 +383,16 @@ function forwardButtonClick() {
         ligases.shift();
       }
       
-      var amino_acid = acgraph.rect(mRNAs[ribosome_pos*3+1].getX()-box_size_x/2,
-                                    mRNAs[ribosome_pos*3+1].getY()-(box_size_y*5+box_padding_y*2),
+      var amino_acid = acgraph.rect(mRNAs[myRibosome.pos*3+1].getX()-box_size_x/2,
+                                    mRNAs[myRibosome.pos*3+1].getY()-(box_size_y*5+box_padding_y*2),
                                     box_size_x*2, box_size_y*2);
       amino_acid.parent(stage);
       
-      if (codons[ribosome_pos] in codon_mappings)
+      if (codons[myRibosome.pos] in codon_mappings)
       {
         var amino_acid_text = stage.text(amino_acid.getX()+box_padding_x,
                                          amino_acid.getY()+box_padding_y,
-                                         codon_mappings[codons[ribosome_pos]],
+                                         codon_mappings[codons[myRibosome.pos]],
                                          {fontSize: '15px'});
       }
       else
@@ -413,9 +404,9 @@ function forwardButtonClick() {
       }
       
       
-      amino_acid.fill("#" + rna_colors[codons[ribosome_pos].substring(0,1)].substring(1,3)
-                          + rna_colors[codons[ribosome_pos].substring(1,2)].substring(3,5)
-                          + rna_colors[codons[ribosome_pos].substring(2,3)].substring(5,7))
+      amino_acid.fill("#" + rna_colors[codons[myRibosome.pos].substring(0,1)].substring(1,3)
+                          + rna_colors[codons[myRibosome.pos].substring(1,2)].substring(3,5)
+                          + rna_colors[codons[myRibosome.pos].substring(2,3)].substring(5,7))
       amino_acids.push(amino_acid);
       amino_acid_texts.push(amino_acid_text);
       
@@ -433,11 +424,50 @@ function forwardButtonClick() {
   }
 }
 
+function popLastAminoAcid()
+{
+  if (ligases.length > 0)
+    ligases[ligases.length-1].remove();
+  if (amino_acids.length > 0)
+    amino_acids[amino_acids.length-1].remove();
+  if (amino_acid_texts.length > 0)
+    amino_acid_texts[amino_acid_texts.length-1].remove();
+  if (amino_acid_links.length > 0)
+    amino_acid_links[amino_acid_links.length-1].remove();
+
+  ligases.pop();
+  amino_acids.pop();
+  amino_acid_texts.pop();
+  amino_acid_links.pop();
+}
+
+function replaceLigase()
+{
+  var ligase = acgraph.rect(mRNAs[(myRibosome.pos-1)*3+1].getX(), mRNAs[(myRibosome.pos-1)*3+1].getY()-box_size_y*3, box_size_x, box_size_y*3-box_padding_y*2.5);
+  ligase.parent(stage);
+  ligase.fill("#DDDDDD");
+  ligases.unshift(ligase);
+}
+
 function createSequence(text)
 {
-  var zuz = acgraph.text(20, 20).htmlText("Hell <b>yeah</b> let's get that zuz", {fontSize: '25px'});
-  buuuh = stage.rect(zuz.getX(), zuz.getY(), zuz.getWidth(), zuz.getHeight());
-  zuz.parent(stage);
+  const re = RegExp("(AUG){1}([A|C|U|G]{3})*(UAG|UAA|UGA){1}");
+  rnaInput = document.getElementById("rnaInput").value;
+
+  match = rnaInput.match(re);
+  if (match != null) {
+    const indexOfFirst = rnaInput.indexOf(match);
+    var regex = acgraph.text(65, 580).htmlText(rnaInput.slice(0,indexOfFirst-1)
+                                               +"<b>"+match[0]
+                                               +"</b>"+rnaInput.slice(indexOfFirst+match[0].length,-1));
+  }
+  else {
+    var regex = acgraph.text(65, 580).htmlText(rnaInput);
+  }
+
+  regex.fontSize("24px");
+  regex_bounding_box = stage.rect(regex.getX()-2, regex.getY()+3, regex.getWidth()+3, regex.getHeight()-4);
+  regex.parent(stage);
 
   x_inc = x+box_size_x*4+box_padding_x*0.5;
   for (let i = 0; i < text.length; i++)
@@ -456,6 +486,11 @@ function createSequence(text)
     if ((i+1) >= 3 && (i+1)%3 == 0)
     {
       codons.push( text[i-2] + text[i-1] + text[i] );
+
+      if (codons[codons.length-1] == "AUG" && init_codon_pos == INIT_CODON_POS_MAX)
+      {
+        init_codon_pos = codons.length-1;
+      }
       
       var linePath = stage.path();
       linePath.moveTo(x_inc-box_padding_x, y+box_size_y+box_padding_y);
@@ -473,9 +508,8 @@ function createSequence(text)
 
 function reset()
 {
-  su_small.setPosition(x-box_padding_x/2, y-(box_size_y*6+box_padding_y));
-  su_large.setPosition(x-box_padding_x/2, y-box_padding_y/2);
-  ribosome_pos = 0;
+  su_large.setPosition(x-box_padding_x/2, y-(box_size_y*6+box_padding_y));
+  su_small.setPosition(x-box_padding_x/2, y-box_padding_y/2);
   mRNAs.forEach(item => item.remove());
   mRNATexts.forEach(item => item.remove());
   linePaths.forEach(item => item.remove());
@@ -494,8 +528,7 @@ function reset()
   amino_acid_texts = [];
   amino_acid_links = [];
   
-  ribosome_pos = 0;
-  myRibosome.setState();
+  myRibosome.reset();
 
   d = document.getElementById("scrollDiv");
   d.scrollTo(0,0);
@@ -503,8 +536,8 @@ function reset()
 
 function restage(ribosome_pos)
 {
-    myRibosome.setState();
+    myRibosome.reset();
     
-    su_small.setPosition(su_small.getX()+ribosome_width, su_small.getY());
     su_large.setPosition(su_large.getX()+ribosome_width, su_large.getY());
+    su_small.setPosition(su_small.getX()+ribosome_width, su_small.getY());
 }
