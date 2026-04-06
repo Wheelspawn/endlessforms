@@ -4,9 +4,11 @@
 var stage = acgraph.create('scrollDiv');
 var stage2 = acgraph.create('scrollDiv2');
 
-window.innerHeight = window.innerHeight * 0.9;
+window.innerHeight = window.innerHeight * 0.55;
 stage.resize(window.innerWidth*0.9, window.innerHeight*0.45);
 stage2.resize(window.innerWidth*0.9, window.innerHeight*0.45);
+
+scaling_const = 1;
 
 // var chart = anychart.column();
 // chart.container(stage.layer()).draw();
@@ -115,16 +117,24 @@ const codon_mappings={
 const INIT_CODON_POS_MAX = 99999;
 
 // starting positions of first RNA
-const x = window.innerWidth * 0.05;
-const y = window.innerHeight * 0.4;
+const x = 30;
+const y = 220;
 
-// box size
-const box_size_x = window.innerHeight * 0.05
-const box_size_y = window.innerHeight * 0.05
+// rna box size
+const box_size_x = 40;
+const box_size_y = 40;
 
 // padding between boxes
-const box_padding_x = box_size_x * 0.4
-const box_padding_y = box_size_y * 0.4
+const box_padding_x = 5;
+const box_padding_y = 5;
+
+// amino acid box size
+const amino_acid_box_size_x = 80;
+const amino_acid_box_size_y = 80;
+
+// padding between boxes
+const amino_acid_box_padding_x = 10;
+const amino_acid_box_padding_y = 10;
 
 var mRNAs = [];
 var mRNADescs = [];
@@ -145,17 +155,17 @@ var before_start_codon = false;
 var at_start_codon = false;
 var after_start_codon = false;
 
-var su_large_width = box_size_x*12+box_padding_x*1.5
-var su_large_height = box_size_y*6
+var su_large_width = 150;
+var su_large_height = box_size_y*2+box_padding_x*2;
 
-var su_small_width = box_size_x*12+box_padding_x*1.5
-var su_small_height = box_size_y+box_padding_y
+var su_small_width = 150;
+var su_small_height = 50;
 
-var ribosome_width = box_size_x*3+box_padding_x*3
+var ribosome_width = 150;
 
 // ribosome small and large subunits
-var rect1 = new acgraph.math.Rect(x-box_padding_x/2, y-(box_size_y*6+box_padding_y), su_large_width, su_large_height);
-var rect2 = new acgraph.math.Rect(x-box_padding_x/2, y-box_padding_y/2, su_small_width, su_small_height);
+var rect1 = new acgraph.math.Rect(x, y-su_large_height, su_large_width, su_large_height);
+var rect2 = new acgraph.math.Rect(x, y+su_small_height+box_padding_y, su_small_width, su_small_height);
 var su_large = acgraph.vector.primitives.roundedRect(stage, rect1, 6);
 var su_small = acgraph.vector.primitives.roundedRect(stage, rect2, 6);
 su_large.fill("#FFE2DE");
@@ -300,7 +310,6 @@ function enterButtonClick() {
 }
 
 function backwardButtonClick() {
-  console.log("myRibosome.pos: ", myRibosome.pos);
   if (myRibosome.pos > 0)
   {
     if (myRibosome.state == RibosomeState.BEFORE_START_CODON ||
@@ -359,7 +368,7 @@ function forwardButtonClick() {
     
     if (myRibosome.pos > 0 && (ligases.length > 0 || !before_start_codon))
     {
-      var ligase = acgraph.rect(mRNAs[myRibosome.pos*3+1].getX(), mRNAs[myRibosome.pos*3+1].getY()-box_size_y*3, box_size_x, box_size_y*3-box_padding_y*2.5);
+      var ligase = acgraph.rect(mRNAs[myRibosome.pos*3+1].getX(), mRNAs[myRibosome.pos*3+1].getY()-su_large_height, box_size_x, box_size_y*2);
       ligase.parent(stage);
       ligase.fill("#DDDDDD");
       ligases.push(ligase);
@@ -372,8 +381,8 @@ function forwardButtonClick() {
       }
       
       var amino_acid = acgraph.rect(mRNAs[myRibosome.pos*3+1].getX()-box_size_x/2,
-                                    mRNAs[myRibosome.pos*3+1].getY()-(box_size_y*5+box_padding_y*2),
-                                    box_size_x*2, box_size_y*2);
+                                    mRNAs[myRibosome.pos*3+1].getY()-(su_large_height*2),
+                                    amino_acid_box_size_x, amino_acid_box_size_y);
       amino_acid.parent(stage);
       
       if (codons[myRibosome.pos] in codon_mappings)
@@ -391,7 +400,6 @@ function forwardButtonClick() {
                                          {fontSize: '15px'});
       }
       
-      
       amino_acid.fill("#" + rna_colors[codons[myRibosome.pos].substring(0,1)].substring(1,3)
                           + rna_colors[codons[myRibosome.pos].substring(1,2)].substring(3,5)
                           + rna_colors[codons[myRibosome.pos].substring(2,3)].substring(5,7))
@@ -402,7 +410,7 @@ function forwardButtonClick() {
       {
         var link = acgraph.path();
         link.parent(stage);
-        link.moveTo(amino_acid.getX()-(box_size_x*2+box_padding_x/2), amino_acid.getY()+box_size_y);
+        link.moveTo(amino_acid.getX()-(amino_acid_box_size_x-amino_acid_box_padding_x), amino_acid.getY()+box_size_y);
         link.lineTo(amino_acid.getX(), amino_acid.getY()+box_size_y);
         link.close();
         
@@ -439,21 +447,20 @@ function replaceLigase()
 
 function createSequence(text)
 {
-  x_inc = x+box_size_x*4+box_padding_x*0.5;
+  x_inc = x;
   for (let i = 0; i < text.length; i++)
   {
-    var rectangle = acgraph.rect(x_inc, y, box_size_x, box_size_y);
+    var rectangle = acgraph.rect(x_inc+box_padding_x, y+box_padding_y, box_size_x, box_size_y);
     rectangle.parent(stage);
     rectangle.desc(text[i]);
     var mRNADesc = rectangle.desc();
-    var mRNAText = stage.text(x_inc+box_size_x/5, y+box_size_y/5, mRNADesc, {fontSize: '15px'});
+    var mRNAText = stage.text(x_inc+box_padding_x*2, y+box_padding_y*2, mRNADesc, {fontSize: '15px'});
     rectangle.fill(rna_colors[text[i]]);
     mRNAs.push(rectangle);
     mRNADescs.push(mRNADesc);
     mRNATexts.push(mRNAText);
-    x_inc += box_size_x + box_padding_x;
     
-    if ((i+1) >= 3 && (i+1)%3 == 0)
+    if ((i+1) >= 3 && (i)%3 == 0)
     {
       codons.push( text[i-2] + text[i-1] + text[i] );
 
@@ -463,12 +470,14 @@ function createSequence(text)
       }
       
       var linePath = stage.path();
-      linePath.moveTo(x_inc-box_padding_x, y+box_size_y+box_padding_y);
-      linePath.lineTo(x_inc-(box_size_x*3+box_padding_x*3), y+box_size_y+box_padding_y);
+      linePath.moveTo(x_inc-box_padding_x, y+box_size_y+box_padding_y*2);
+      linePath.lineTo(x_inc-(box_size_x*3+box_padding_x*5), y+box_size_y+box_padding_y*2);
       linePath.close();
       
       linePaths.push(linePath);
     }
+
+    x_inc += box_size_x + box_padding_x*2;
   }
   
   stage.resize(rectangle.getX()+box_size_x+box_padding_x, window.innerHeight*0.9);  
