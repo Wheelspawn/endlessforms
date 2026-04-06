@@ -1,53 +1,239 @@
-body {
-  font-family: "Courier", sans-serif;
-  margin: 0px;
-}
-
-header {
-  text-align: right;
-}
-
-p {
-  color: #000000;
-}
-
 a {
-  text-decoration: none;
-  color: rgb(0, 0, 0);
+  color: inherit;
 }
 
-a:hover {
-  color: rgb(208, 0, 255);
+body {
+  font-family: 'VT323';
+  font-size: 28px;
+  margin: 0;
+  padding: 0;
+  line-height: 1.6;
+  height: 100%;
+}
+
+.box {
+  width: 100%;
+  background-color: rgb(255, 255, 255);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  border: 1px solid #000;
+  line-height: 1.6rem;
+}
+
+.box-text {
+  font-size: 1.2rem;
+  color: #000;
+  text-transform: uppercase;
 }
 
 section {
+  margin: 0 auto;
+  padding: 2rem;
+  padding-top: 0.5rem;
+  width: 40vw;
+  padding-bottom: 0;
+}
+
+.cv-container p {
+  text-indent: 2rem;
+}
+
+.cv-container span {
+    margin-left: 5em;
+}
+
+.form-row {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 1rem;
+}
+
+.form-row label {
+  margin-right: 1rem;
+}
+
+.grid {
   display: flex;
   flex-direction: row;
-  flex-wrap: wrap;
+  grid-template-rows: repeat(1, 1fr);
+  grid-gap: 1rem;
+  margin-top: 3rem;
+  margin-bottom: 3rem;
+  justify-content: center;
+  align-items: center;
 }
 
-#leftcol {
-  flex: 1;
-  margin-right: 10px;
+.grid-item {
+  width: 25%;
+  display: flex;
+  position: relative;
+  overflow: hidden;
+  color: black;
+}
+
+.grid-item img {
+  width: 100%;
+  height: auto;
+  display: flex;
+  transition: transform 0.3s;
+}
+
+.grid-item .overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0);
+  opacity: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: opacity 0.0s;
+}
+
+.grid-item:hover img {
+  transform: scale(1.1);
+}
+
+.grid-item:hover .overlay {
+  opacity: 1;
+}
+
+h1 {
+  font-size: 2rem;
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+h2 {
+  font-size: 1.5rem;
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+  text-align: right;
+}
+
+.holder {
+  width: 100vh;
+}
+
+html {
+  background-color:black;
+  color: white;
+  height: 100%;
+}
+
+input[type="text"], input[type="email"], textarea {
+  width: 50%;
+}
+
+#message {
+  height: 160px;
+  resize: none;
+}
+
+input[type="submit"] {
+  background-color: #000;
+  color: #FFF;
+  text-transform: uppercase;
+  border: none;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  font-family: 'VT323';
+  font-size: 28px;
+  border: 1px solid white;
+}
+
+input[type="submit"]:hover {
+  background-color: #8800ff;
+}
+
+.layout {
+  position: relative;
+  top: 10vh;
+  min-height: 90vh;
+  display: flex;
   background-color: black;
-  color:azure;
 }
 
-#aboutme {
-  flex: 2;
+#leftvoid, #rightvoid {
+  display: flex;
+  width: 20vw;
+  border-left: 1px solid white;
+  border-right: 1px solid white;
 }
 
-#rightcol {
-  flex: 1;
-  margin-left: 10px;
-  background-color: black;
-  color:azure;
+#leftcol, #rightcol {
+  display: flex;
+  width: 10vw;
 }
 
-#thinginside1 {
-  flex-wrap: wrap;
+#leftcanvas, #rightcanvas {
+  width: 10vw;
+  image-rendering: pixelated;
+  background: #000;
 }
 
-#thinginside2 {
-  flex-wrap: wrap;   
+.nav {
+  position: fixed;
+  width: 100%;
+  z-index: 100;
+  width: 100vw;
+  height: 10vh;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  flex-direction: row;
+  background: black;
+  border-bottom: 1px solid white;
+}
+
+.nav-left {
+  display: flex;
+  justify-content: flex-start;
+  flex-grow: 0;
+  padding-left: 1rem;
+}
+
+.nav-right {
+  display: flex;
+  text-transform: uppercase;
+  text-decoration: none;
+  justify-content: flex-end;
+  flex-grow: 1;
+  padding-right: 1rem;
+}
+
+.nav-right a {
+  padding-right: 1rem;
+}
+
+.nav-right a:hover {
+  color: #8800ff;
+}
+
+p {
+  margin: 10px;
+  line-height: 24px;
+}
+
+p a:hover {
+  color: #8800ff;
+}
+
+::selection {
+    background: #8800ff;
+    color: white;
+}
+
+.tab {
+  display: inline-block;
+  width: 2rem;
+}
+
+textarea {
+  resize: vertical;
 }

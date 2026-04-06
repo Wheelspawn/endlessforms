@@ -1,33 +1,64 @@
 <!DOCTYPE html>
-<html>
-    <head>
-        <title>I Love You</title>
-        <link rel="stylesheet" href="styles.css">
-    </head>
-    <body>
-        <section>
-            <div id="leftcol">
-                ANVJAOECJAISDHCIAEHFAIWEFJAODVHAIHFNAODFHAIWEFHAOWDJFAOWEFHAWIEHFAWDF
-            </div>
-            <div id="aboutme">
+<html lang="en-US">
+  <head>
+    <meta charset="UTF-8">
+    <title>Endless Forms</title>
+    <meta property="og:title" content="Endless Forms">
+    <meta property="og:description" content="About Me">
+    <meta property="og:image" content="logo.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="Nathaniel Le Sage" content="Nathaniel Le Sage is a software engineer with five years of experience in
+                                            Python, C++, C#, JavaScript, HTML, CSS, SQL, data science and bioinformatics.">
+    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="icon" sizes="64x64" href="logo.ico" type="image/x-icon">
+    <script src="banner.js" defer></script>
+  </head>
+  <body>
 
-                <header id="landing-page-header">
-                    <nav>
-                        <a href="index.html">About Me</a>
-                        <a href="goodlink1.html">Links</a>
-                        <a href="goodlink2.html">Essays</a>
-                        <a href="cv.html">CV</a>
-                        <a href="goodlink3.html">Projects</a>
-                    </nav>
-                </header>
-
-                <h1>About Me</h1>
-                <p>I am a man.</p>
-                <a href="obviousscam.html">Click this for free money (not a scam)</a>
+    <nav class="nav">
+      <div class="nav-left">
+        <a>ENDLESS FORMS MOST BEAUTIFUL</a>
+      </div>
+      <div class="nav-right">
+        <a href="index.html">HOME</a>
+        <a href="cv.html">CV</a>
+        <a href="essays.html">Essays</a>
+        <a href="projects.html">Projects</a>
+        <a href="contact.html">Contact</a>
+      </div>
+    </nav>
+      
+    <div class="layout">
+      <canvas id="leftcanvas"></canvas>
+      <div id="leftvoid"></div>
+      <section>
+        <h1>Nathaniel Le Sage</h1>
+        <p>I am a software engineer.</p>
+        <p>I specialize in embedded C++.
+           I've worked for major clients such as John Deere and Electronic Theater Controls.
+           I've also done web and enterprise application development and data science + 
+           machine learning for startups, research labs and established companies.</p>
+           <p>Click here to see some of my finished projects:</p>
+        <div class="grid" id="aboutme">
+          <a href="nothing.html" class="grid-item">
+            <img src="ribosome.png" alt="Image 1">
+            <div class="overlay">
+              <div class="box">Ribosome Explorer</div>
             </div>
-            <div id="rightcol">
-                ANVJAOECJAISDHCIAEHFAIWEFJAODVHAIHFNAODFHAIWEFHAOWDJFAOWEFHAWIEHFAWDF
+          </a>
+          <a href="nothing.html" class="grid-item">
+            <img src="run-and-tumble.png" alt="Image 2">
+            <div class="overlay">
+              <div class="box">Run And Tumble</div>
             </div>
-        </section>
-    </body>
+          </a>
+        </div>
+      </section>
+      <div id="rightvoid"></div>
+      <canvas id="rightcanvas"></canvas>
+    </div>
+    
+    <footer></footer>
+  </body>
 </html>

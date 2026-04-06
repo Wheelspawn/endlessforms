@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Ribosome Explorer</title>
+    <script src="https://cdn.anychart.com/releases/8.14.0/js/graphics.min.js" charset="utf-8"></script>
+    <script src="https://cdn.anychart.com/releases/8.14.1/js/anychart-base.min.js"></script>
+    <script src="https://cdn.anychart.com/releases/8.14.1/js/anychart-exports.min.js"></script>
+    <script src="https://cdn.anychart.com/releases/8.14.1/js/anychart-ui.min.js"></script>
+    
+    <style>
+        .scroll-box {
+            height: 80%;
+            overflow: scroll;
+            border: 1px solid #ccc;
+            padding: 10px;
+        }
+    </style>
+    
+</head>
+<body>
+    <div id="myDiv0">
+        <div>Ribosome Explorer</div>
+        <div id="scrollDiv" class="scroll-box">
+            <script src="ribosome.js" defer></script>
+        </div>
+        
+         <form>
+             <label for="rnaInput">mRNA:</label>
+             <input type="text" id="rnaInput" name="rnaInput" value="GCCGCCACCAUGGGGAAACCCUUUGGGAAACCCUUUGGGAAACCCUUU">
+        </form>
+
+        <button id="enterButton" onclick="enterButtonClick()">Enter</button>
+        <button id="resetButton" onclick="enterButtonClick()">Reset</button>
+        <button id="backButton" onclick="backwardButtonClick()">Backward</button>
+        <button id="nextButton" onclick="forwardButtonClick()">Forward</button>
+    </div>
+</body>
+</html>
+
