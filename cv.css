@@ -1,0 +1,25 @@
+body {
+  line-height: 1.6;
+  height: 100%;
+  margin-bottom: 2rem;
+}
+
+html {
+  background-color:rgb(255, 255, 255);
+  color: rgb(0, 0, 0);
+  height: 100%;
+}
+
+p {
+  margin-left: 1rem;
+  margin-top: 4px;
+  margin-bottom: 4px;
+}
+
+h2 {
+  margin-bottom: 0;
+}
+
+.cv-container {
+  padding-bottom: 2rem;
+}
