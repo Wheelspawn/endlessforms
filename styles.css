@@ -62,11 +62,12 @@ footer {
   margin-top: calc(5vh - 3px);
 }
 
+/*
 @media screen and (width >= height) {
   footer {
     background: rgb(255, 0, 0)
   }
-}
+} */
 
 footer p {
   margin-left: 0rem;
@@ -203,6 +204,7 @@ input[type="submit"]:hover {
   flex-direction: row;
   background: black;
   border-bottom: 1px solid rgb(210, 210, 210);
+  flex-wrap: wrap;
 }
 
 .nav-left {
