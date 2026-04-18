@@ -187,6 +187,11 @@ const RibosomeState = Object.freeze({
   AFTER_STOP_CODON: 4
 });
 
+var regex = acgraph.text(18, 10).htmlText("");
+regex.fontSize("24px");
+regex_bounding_box = stage2.rect(regex.getX()-1, regex.getY()-1, regex.getWidth()+2, regex.getHeight()+2);
+regex.parent(stage2);
+
 class Ribosome {
   constructor()
   {
@@ -195,33 +200,6 @@ class Ribosome {
     this.pos = -1;
     this.ribosome_width = box_size_x*3+box_padding_x*3;
   }
-
-  // this.su_large_width = box_size_x*12+box_padding_x*1.5;
-  // this.su_large_height = box_size_y*6;
-  
-  // this.su_small_width = box_size_x*12+box_padding_x*1.5;
-  // this.su_small_height = box_size_y+box_padding_y;
-  
-  // this.su_large_x_init_pos = x-box_padding_x/2;
-  // this.su_large_y_init_pos = y-(box_size_y*6+box_padding_y);
-  // this.su_small_x_init_pos = y-box_padding_y/2;
-  // this.su_small_y_init_pos = x-box_padding_x/2;
-  
-  // this.su_large_x_pos: this.su_large_x_init_pos;
-  // this.su_large_y_pos: this.su_large_y_init_pos;
-  // this.su_small_x_pos: this.su_small_x_init_pos;
-  //  this.su_small_y_pos: this.su_small_y_init_pos;
-
-  // this.rect1 = new acgraph.math.Rect(su_large_x_pos, su_large_y_pos, su_large_width, su_large_height);
-  // this.rect2 = new acgraph.math.Rect(su_small_x_pos, su_small_y_pos, su_small_width, su_small_height);
-
-  // this.su_large = acgraph.vector.primitives.roundedRect(stage, rect1, 6);
-  // this.su_small = acgraph.vector.primitives.roundedRect(stage, rect2, 6);
-
-  // init() {
-  //   this.su_large.fill("#FFE2DE");
-  //   this.su_small.fill("#FFE2DE");
-  // }
 
   setState()
   {
@@ -295,11 +273,6 @@ class Ribosome {
     this.state = RibosomeState.BEFORE_START_CODON;
   }
 }
-
-const myRibosome = new Ribosome();
-
-// main
-createSequence(document.getElementById("rnaInput").value);
 
 function enterButtonClick() {
   reset();
@@ -504,8 +477,11 @@ function pushAminoAcid()
 
   amino_acid_texts.push(amino_acid_text);
 }
+
 function createSequence(text)
 {
+  text = text.replaceAll("T","U");
+  console.log(text);
   x_inc = x+su_small_width*(2/3);
   for (let i = 0; i < text.length - text.length%3; i++)
   {
@@ -518,6 +494,8 @@ function createSequence(text)
     mRNAs.push(rectangle);
     mRNADescs.push(mRNADesc);
     mRNATexts.push(mRNAText);
+
+    getRegex();
     
     if ((i+1) >= 3 && (i+1)%3 == 0)
     {
@@ -539,7 +517,8 @@ function createSequence(text)
     x_inc += box_size_x + box_padding_x*2;
   }
   
-  stage.resize(rectangle.getX()+box_size_x+box_padding_x, window.innerHeight*0.9);  
+  d = document.getElementById("scrollDiv");
+  stage.resize(Math.max(d.clientWidth+ribosome_width,rectangle.getX()+box_size_x+box_padding_x), window.innerHeight*0.9);  
   
   myRibosome.setState();
 
@@ -557,7 +536,7 @@ function reset()
   amino_acids.forEach(item => item.remove());
   amino_acid_texts.forEach(item => item.remove());
   amino_acid_links.forEach(item => item.remove());
-  
+
   mRNAs = [];
   mRNADescs = [];
   mRNATexts = [];
@@ -576,28 +555,49 @@ function reset()
 
 function getRegex()
 {
-  const re = RegExp("(AUG){1}([A|C|U|G]{3})*(UAG|UAA|UGA){1}");
   rnaInput = document.getElementById("rnaInput").value;
+  rnaInput = rnaInput.replaceAll("T","U");
+
+  const re = RegExp("(AUG)(AAA|AAC|AAG|AAU\
+                          |ACA|ACC|ACG|ACU\
+                          |AGA|AGC|AGG|AGU\
+                          |AUA|AUC|AUG|AUU\
+                          |CAA|CAC|CAG|CAU\
+                          |CCA|CCC|CCG|CCU\
+                          |CGA|CGC|CGG|CGU\
+                          |CUA|CUC|CUG|CUU\
+                          |GAA|GAC|GAG|GAU\
+                          |GCA|GCC|GCG|GCU\
+                          |GGA|GGC|GGG|GGU\
+                          |GUA|GUC|GUG|GUU\
+                          |UAA|UAC|UAG|UAU\
+                          |UCA|UCC|UCG|UCU\
+                          |UGA|UGC|UGG|UGU\
+                          |UUA|UUC|UUG|UUU)*");
 
   match = rnaInput.match(re);
   if (match != null) {
     const indexOfFirst = rnaInput.indexOf(match);
-    var regex = acgraph.text(18, 10).htmlText(rnaInput.slice(0,indexOfFirst-1)
+    regex.htmlText(rnaInput.slice(0,indexOfFirst-1)
                                                +"<b>"+match[0]
                                                +"</b>"+rnaInput.slice(indexOfFirst+match[0].length,-1));
   }
   else {
-    var regex = acgraph.text(18, 10).htmlText(rnaInput);
+    regex.htmlText(rnaInput);
+  }
+  
+  regex_bounding_box.setWidth(regex.getWidth()+2);
+  regex_bounding_box.setHeight(regex.getHeight()+2);
+
+  d = document.getElementById("scrollDiv2");
+  if (regex.getWidth() > d.scrollLeft+d.clientWidth)
+  {
+    d.scrollTo(regex.getWidth()-d.clientWidth,0);
   }
 
-  regex.fontSize("24px");
-  regex_bounding_box = stage2.rect(regex.getX()-2, regex.getY()+3, regex.getWidth()+3, regex.getHeight()-4);
-  regex.parent(stage2);
-
-  return regex;
+  stage2.resize(Math.max(d.clientWidth,regex_bounding_box.getX()+regex_bounding_box.getWidth()+10), window.innerHeight*0.55);  
+  d.scrollTo(0,0);
 }
-
-getRegex();
 
 function setImages(state)
 {
@@ -613,3 +613,8 @@ function setImages(state)
     }
   }
 }
+
+const myRibosome = new Ribosome();
+
+// main
+createSequence(document.getElementById("rnaInput").value);
